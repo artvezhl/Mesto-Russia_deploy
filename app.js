@@ -12,6 +12,7 @@ const cards = require('./routes/cards.js');
 const unfoundPage = require('./middlewares/unfound.js');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -24,6 +25,9 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
   useUnifiedTopology: true,
 });
+
+// подключение логгера запросов
+app.use(requestLogger);
 
 app.post('/signin', celebrate({
   headers: Joi.object().keys({
@@ -56,6 +60,9 @@ app.use(auth);
 app.use('/users', users);
 app.use('/cards', cards);
 app.use(unfoundPage);
+
+// логгер ошибок
+app.use(errorLogger);
 
 // обработчики ошибок celebrate
 app.use(errors());
