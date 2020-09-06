@@ -4,37 +4,33 @@ const User = require('../models/user');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 const userErrorsHandler = require('../utils/helpers');
+const NotFoundError = require('../errors/not-found-err');
 
 // возврат всех пользователей
-module.exports.getUsers = async (req, res) => {
+module.exports.getUsers = async (req, res, next) => {
   try {
     const users = await User.find({});
     res.send(users);
   } catch (err) {
-    res.status(500).send({ message: 'На сервере произошла ошибка' });
+    next(err);
   }
 };
 
 // возврат пользователя по _id
-module.exports.getUser = async (req, res) => {
+module.exports.getUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.userId);
     if (user === null) {
-      res.status(404).send({ message: `Пользователь с номером ${req.params.userId} отсутствует` });
-      return;
+      throw new NotFoundError(`Пользователь с номером ${req.params.userId} отсутствует`);
     }
     res.send(user);
   } catch (err) {
-    if (err.name === 'CastError') {
-      res.status(400).send({ message: `Пользователь с номером ${req.params.userId} отсутствует` });
-      return;
-    }
-    res.status(500).send({ message: 'На сервере произошла ошибка' });
+    userErrorsHandler(err, res, next);
   }
 };
 
 // создание нового пользователя
-module.exports.createUser = async (req, res) => {
+module.exports.createUser = async (req, res, next) => {
   try {
     const {
       name, about, avatar, email,
@@ -63,31 +59,31 @@ module.exports.createUser = async (req, res) => {
 
     res.send(data(newUser));
   } catch (err) {
-    userErrorsHandler(err, res);
+    userErrorsHandler(err, res, next);
   }
 };
 
 // обновление профиля
-module.exports.updateProfile = async (req, res) => {
+module.exports.updateProfile = async (req, res, next) => {
   try {
     const { name, about } = req.body;
     const updatedProfile = await
     User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true, new: true });
     res.send(updatedProfile);
   } catch (err) {
-    userErrorsHandler(err, res);
+    userErrorsHandler(err, res, next);
   }
 };
 
 // обновление аватара
-module.exports.updateAvatar = async (req, res) => {
+module.exports.updateAvatar = async (req, res, next) => {
   try {
     const { avatar } = req.body;
     const updatedAvatar = await
     User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true, new: true });
     res.send(updatedAvatar);
   } catch (err) {
-    userErrorsHandler(err, res);
+    userErrorsHandler(err, res, next);
   }
 };
 
@@ -109,9 +105,10 @@ module.exports.login = async (req, res) => {
         sameSite: true,
       })
       .end(token);
-  } catch (err) {
-    res
-      .status(401)
-      .send({ message: err.message });
+  } catch (e) {
+    const err = new Error('Необходима авторизация');
+    err.statusCode = 401;
+
+    next(err);
   }
 };

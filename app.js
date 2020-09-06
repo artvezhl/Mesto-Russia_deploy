@@ -38,6 +38,19 @@ app.use('/users', users);
 app.use('/cards', cards);
 app.use(unfoundPage);
 
+// обработчик ошибок
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message
+    });
+});
+
 // запуск сервера на локальном порте (по-умолчанию localhost:3000)
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
