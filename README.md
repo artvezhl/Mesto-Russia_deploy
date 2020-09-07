@@ -4,7 +4,8 @@ Yandex Praktikum training project
 
 Version 0.0.1
 
-## [Страница Mesto-Russia_backend] (https://http://www.mesto-russia.tk/)
+## [Домен Mesto-Russia_backend] (https://www.mesto-russia.tk/)
+## [Публичный IP-адрес] (130.193.59.54)
 
 ## Стек технологий:
 - HTML5
