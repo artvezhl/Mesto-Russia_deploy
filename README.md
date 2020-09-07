@@ -4,8 +4,7 @@ Yandex Praktikum training project
 
 Version 0.0.1
 
-## Учебный проект, в котором с помощью JS реализованы: 
-
+## [Страница Mesto-Russia_backend] (https://http://www.mesto-russia.tk/)
 
 ## Стек технологий:
 - HTML5
