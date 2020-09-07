@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
-const userErrorsHandler = require('../utils/helpers');
+const { userErrorsHandler } = require('../utils/helpers');
 const NotFoundError = require('../errors/not-found-err');
 
 // возврат всех пользователей

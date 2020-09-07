@@ -1,4 +1,6 @@
-module.exports = (e, res, next) => {
+const validator = require('validator');
+
+const userErrorsHandler = (e, res, next) => {
   let err;
   if (e.name === 'ValidationError') {
     err = new Error(e.message);
@@ -14,3 +16,9 @@ module.exports = (e, res, next) => {
   }
   next(err);
 };
+
+const linkValidator = (link) => {
+  return validator.isURL(link) ? link : new Error();
+}
+
+module.exports = { userErrorsHandler, linkValidator };

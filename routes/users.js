@@ -7,6 +7,7 @@ const {
   updateProfile,
   updateAvatar,
 } = require('../controllers/users');
+const { linkValidator } = require('../utils/helpers');
 
 router.get('/', celebrate({
   headers: Joi.object().keys({
@@ -42,7 +43,7 @@ router.patch('/me/avatar', celebrate({
     cookie: Joi.string().required(),
   }).unknown(true),
   body: Joi.object().keys({
-    avatar: Joi.string().required(),
+    avatar: Joi.string().required().custom(linkValidator),
   }),
 }), updateAvatar);
 

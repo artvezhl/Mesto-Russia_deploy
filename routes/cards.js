@@ -8,6 +8,7 @@ const {
   likeCard,
   dislikeCard,
 } = require('../controllers/cards');
+const { linkValidator } = require('../utils/helpers');
 
 router.get('/', celebrate({
   headers: Joi.object().keys({
@@ -23,7 +24,7 @@ router.post('/', celebrate({
   }).unknown(true),
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(3),
-    link: Joi.string().required(),
+    link: Joi.string().required().custom(linkValidator),
   }),
 }), createCard);
 

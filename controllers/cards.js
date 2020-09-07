@@ -1,6 +1,6 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/not-found-err');
-const userErrorsHandler = require('../utils/helpers');
+const { userErrorsHandler } = require('../utils/helpers');
 
 // возврат всех карточек
 module.exports.getCards = async (req, res, next) => {
