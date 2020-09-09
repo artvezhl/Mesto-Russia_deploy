@@ -26,12 +26,8 @@ module.exports.createCard = async (req, res, next) => {
 // удаление карточки
 module.exports.removeCard = async (req, res, next) => {
   try {
-    const card = await Card.findById(req.params.cardId);
+    const card = await Card.findById(req.params.cardId).orFail('NotValidCard');
     let cardToRemove;
-
-    if (card === null) {
-      throw new NotFoundError(`Карточка с номером ${req.params.cardId} отсутствует`);
-    }
 
     if (req.user._id.toString() !== card.owner.toString()) {
       const authError = new Error(`У Вас отсутствуют права на удаление карточки ${req.params.cardId}`);

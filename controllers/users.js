@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
-const { userErrorsHandler } = require('../utils/helpers');
+const { userErrorsHandler, dataWithoutPasswordReturn } = require('../utils/helpers');
 const NotFoundError = require('../errors/not-found-err');
 
 // возврат всех пользователей
@@ -19,7 +19,7 @@ module.exports.getUsers = async (req, res, next) => {
 // возврат пользователя по _id
 module.exports.getUser = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.userId);
+    const user = await User.findById(req.params.userId).orFail('NotValidUser');
     if (user === null) {
       throw new NotFoundError(`Пользователь с номером ${req.params.userId} отсутствует`);
     }
@@ -47,17 +47,7 @@ module.exports.createUser = async (req, res, next) => {
       name, about, avatar, email, password,
     });
 
-    const data = (object) => {
-      const {
-        name, about, avatar, email, ...rest
-      } = object;
-
-      return {
-        name, about, avatar, email,
-      };
-    };
-
-    res.send(data(newUser));
+    res.send(dataWithoutPasswordReturn(newUser));
   } catch (err) {
     userErrorsHandler(err, res, next);
   }
@@ -88,7 +78,7 @@ module.exports.updateAvatar = async (req, res, next) => {
 };
 
 // контроллер login
-module.exports.login = async (req, res) => {
+module.exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const foundUser = await User.findUserByCredentials(email, password);

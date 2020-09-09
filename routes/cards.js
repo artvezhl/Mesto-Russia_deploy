@@ -30,7 +30,7 @@ router.post('/', celebrate({
 
 router.delete('/:cardId', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24),
+    cardId: Joi.string().alphanum().hex(),
   }),
   headers: Joi.object().keys({
     authorization: Joi.string().required(),

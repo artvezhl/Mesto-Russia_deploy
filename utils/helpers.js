@@ -2,7 +2,7 @@ const validator = require('validator');
 
 const userErrorsHandler = (e, res, next) => {
   let err;
-  if (e.name === 'ValidationError') {
+  if (e.name === 'ValidationError' || e.name === 'CastError') {
     err = new Error(e.message);
     err.statusCode = 400;
   }
@@ -10,15 +10,33 @@ const userErrorsHandler = (e, res, next) => {
     err = new Error('Пользователь с такой почтой уже есть зарегистрирован');
     err.statusCode = 409;
   }
-  if (e.name === 'CastError') {
-    err = new Error(e.message);
-    err.statusCode = 400;
+  if (e === 'NotValidCard') {
+    err = new Error('Карточка с таким номером отсутствует');
+    err.statusCode = 404;
+  }
+  if (e === 'NotValidUser') {
+    err = new Error('Пользователь с таким номером отсутствует');
+    err.statusCode = 404;
   }
   next(err);
 };
 
-const linkValidator = (link) => {
+const linkValidator = function (link) {
   return validator.isURL(link) ? link : new Error();
-}
+};
 
-module.exports = { userErrorsHandler, linkValidator };
+// функция для возврата данных пользователя без пароля
+const dataWithoutPasswordReturn = (object) => {
+  const {
+    name,
+    about,
+    avatar,
+    email,
+  } = object;
+
+  return {
+    name, about, avatar, email,
+  };
+};
+
+module.exports = { userErrorsHandler, linkValidator, dataWithoutPasswordReturn };

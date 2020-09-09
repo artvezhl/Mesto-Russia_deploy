@@ -36,18 +36,12 @@ app.get('/crash-test', () => {
 });
 
 app.post('/signin', celebrate({
-  headers: Joi.object().keys({
-    cookie: Joi.string().required(),
-  }).unknown(true),
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),
 }), login);
 app.post('/signup', celebrate({
-  headers: Joi.object().keys({
-    cookie: Joi.string().required(),
-  }).unknown(true),
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
@@ -76,14 +70,14 @@ app.use(errors());
 // обработчик ошибок
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
-
   res
     .status(statusCode)
     .send({
       message: statusCode === 500
         ? 'На сервере произошла ошибка'
-        : message
+        : message,
     });
+  next();
 });
 
 // запуск сервера на локальном порте (по-умолчанию localhost:3000)
